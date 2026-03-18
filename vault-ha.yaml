@@ -5,9 +5,9 @@ server:
   
   # Direct credentials for POC/Demo purposes
   extraEnvironmentVars:
-    AWS_ACCESS_KEY_ID: "HardcodedAccessKey"
-    AWS_SECRET_ACCESS_KEY: "AhrdCodedSecretKey"
-    AWS_REGION: "Region"
+    AWS_ACCESSKEY_ID: ${AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    AWS_REGION: "us-east-1"
 
   # Reduced resources to ensure all 3 pods can be scheduled on 1 node
   resources:
@@ -37,7 +37,7 @@ server:
         # --- AWS KMS AUTO-UNSEAL ---
         seal "awskms" {
           region     = "us-east-1"
-          kms_key_id = "KMS-Key"
+          kms_key_id = ${AWS_KMS_KEY}
         }
         service_registration "kubernetes" {}
 

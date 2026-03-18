@@ -1,0 +1,51 @@
+server:
+  # FIX: Allows all 3 pods to run on your single Minikube node
+  # (Disables the default "one pod per node" rule)
+  affinity: "" 
+  
+  # Direct credentials for POC/Demo purposes
+  extraEnvironmentVars:
+    AWS_ACCESS_KEY_ID: "HardcodedAccessKey"
+    AWS_SECRET_ACCESS_KEY: "AhrdCodedSecretKey"
+    AWS_REGION: "Region"
+
+  # Reduced resources to ensure all 3 pods can be scheduled on 1 node
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+        storage "raft" {
+          path = "/vault/data"
+        }
+        # --- AWS KMS AUTO-UNSEAL ---
+        seal "awskms" {
+          region     = "us-east-1"
+          kms_key_id = "KMS-Key"
+        }
+        service_registration "kubernetes" {}
+
+  dataStorage:
+    enabled: true
+    size: 2Gi
+    storageClass: "standard"
+
+ui:
+  enabled: true
+  serviceType: "NodePort"
